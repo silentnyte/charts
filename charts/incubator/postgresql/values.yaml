@@ -2,13 +2,29 @@ image:
   repository: tccr.io/truecharts/postgresql
   pullPolicy: IfNotPresent
   tag: 14.7.0@sha256:9a9097005c47417ba785fdc0e4ced26937106234abfce83da36ce6accdceca60
+manifestManager:
+  enabled: true
+securityContext:
+  container:
+    readOnlyRootFilesystem: false
+
+service:
+  main:
+    ports:
+      main:
+        targetPort: 5432
+        port: 5432
+
 workload:
   main:
-    enabled: false
     podSpec:
       containers:
         main:
-          enabled: false
+          env:
+            PG_SECURITY_ADMIN_USER: "admin"
+            PG_SECURITY_ADMIN_PASSWORD: "postgres"
+            PG_SECURITY_DB_USER: "admin"
+            PG_SECURITY_DB_PASSWORD: "postgres"
           probes:
             liveness:
               enabled: false
@@ -16,16 +32,16 @@ workload:
               enabled: false
             startup:
               enabled: false
+
+persistence:
+  data:
+    enabled: true
+    mountPath: "/var/lib/postgresql/data"
+
 portal:
   open:
     enabled: false
-service:
-  main:
-    enabled: false
-    ports:
-      main:
-        enabled: false
-        port: 9999
+
 cnpg:
   main:
     enabled: false
